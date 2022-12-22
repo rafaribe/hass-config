@@ -1,0 +1,18 @@
+---
+home_modes_away_mode:
+  sequence:
+    # A/V
+    - service: switch.turn_off
+      entity_id: switch.downstairs_living_room_subwoofer
+
+    - service: media_player.media_stop
+      entity_id: media_player.kitchen_sonos
+
+    - service: media_player.media_stop
+      entity_id: media_player.upstairs_office_sonos
+
+    - service: media_player.media_stop
+      entity_id: media_player.downstairs_living_room_sonos
+
+    - service: script.turn_on
+      entity_id: script.downstairs_living_room_harmony_poweroff

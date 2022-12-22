@@ -1,0 +1,6 @@
+---
+platform: group
+name: "Backyard - Wall"
+entities:
+  - light.backyard_wall_1
+  - light.backyard_wall_2

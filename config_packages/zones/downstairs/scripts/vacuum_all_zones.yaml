@@ -1,0 +1,24 @@
+---
+vacuum_downstairs:
+  alias: Vacuum all downstairs rooms
+  mode: single
+  variables:
+    vacuum: livingroom
+    segments: |
+      {%- set data = namespace(segments=[]) -%}
+      {%- set data.segments = data.segments + [18,19,20] -%}
+      {% if is_state('binary_sensor.downstairs_utility_room_door_contact', 'on') %}
+      {%- set data.segments = data.segments + [16] -%}
+      {% endif %}
+      {{- data.segments -}}
+
+  sequence:
+  - service: mqtt.publish
+    data:
+      topic: valetudo/{{vacuum}}/MapSegmentationCapability/clean/set
+      payload_template: |
+        {
+          "segment_ids": {{segments}},
+          "iterations": 1,
+          "customOrder": true
+        }

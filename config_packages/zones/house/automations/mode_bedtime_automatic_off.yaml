@@ -1,0 +1,23 @@
+---
+id: home_mode_bedtime_automatic_off
+alias: Home - Mode - Bedtime - Automatc off
+trigger:
+  - platform: state
+    entity_id: binary_sensor.downstairs_hallway_motion
+    to: "on"
+
+condition:
+  and:
+    - alias: "Bedtime mode should be on"
+      condition: state
+      entity_id: input_boolean.home_modes_bedtime_mode
+      state:  "on"
+    - alias: "Early morning"
+      condition: state
+      entity_id: sensor.system_time_of_day
+      state: "early_morning"
+
+action:
+  - service: input_boolean.turn_off
+    data:
+      entity_id: input_boolean.home_modes_bedtime_mode

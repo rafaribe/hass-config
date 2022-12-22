@@ -1,0 +1,26 @@
+---
+id: upstairs_office_switch_on
+alias: Upstairs office - Switch - On
+max_exceeded: silent
+trigger:
+  - id: upstairs_office_switch_button_1_press
+    platform: device
+    domain: hue
+    device_id: cfc130da3b82f0a5c2cf2ec40beabc51
+    type: initial_press
+    subtype: 1
+    unique_id: 429bfacb-0982-4cb9-8578-6b97af808011
+  - id: upstairs_office_switch_button_3_press
+    platform: device
+    domain: hue
+    device_id: cfc130da3b82f0a5c2cf2ec40beabc51
+    type: initial_press
+    subtype: 3
+    unique_id: f5539dc3-9b9a-4f71-80d8-59994f42c307
+
+action:
+  - service: script.input_select_next_with_skip
+    data:
+      entity_id: input_select.upstairs_office_lights_scene
+      skip_options:
+        - "Off"

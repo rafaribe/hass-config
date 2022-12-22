@@ -1,0 +1,13 @@
+---
+name: Downstairs living room - Lights - Off
+entities:
+  light.downstairs_living_room_floor_lamp:
+   state: 'off'
+  light.downstairs_living_room_hue_go:
+    state: 'off'
+  light.downstairs_living_room_speakers:
+    state: 'off'
+
+  # TODO: Remove when Christmas is over
+  switch.spare_p1eu_1:
+    state: 'off'

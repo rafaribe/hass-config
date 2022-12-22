@@ -1,0 +1,26 @@
+# -----------------
+# General settings
+# -----------------
+# The configuration.yaml is only used to bootstrap the system
+# and contains some minimal, but vital, settings.
+
+homeassistant:
+  legacy_templates: false
+  name: Home
+  latitude: !env_var SECRET_ZONE_HOME_LATITUDE
+  longitude: !env_var SECRET_ZONE_HOME_LONGITUDE
+  elevation: !env_var SECRET_ZONE_HOME_ELEVATION
+  unit_system: metric
+  time_zone: Europe/Lisbon
+  country: PT
+
+  external_url: !env_var SECRET_EXTERNAL_URL
+  internal_url: !env_var SECRET_INTERNAL_URL
+
+  media_dirs:
+    local: /media
+
+  # Load packages
+  packages: !include config_packages/packages.yaml
+
+  allowlist_external_dirs: !include whitelist_external_dirs.yaml

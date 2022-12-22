@@ -1,0 +1,11 @@
+---
+platform: template
+sensors:
+  house_presence:
+    friendly_name: 'Presence'
+    device_class: presence
+    value_template: >
+      {{ is_state('person.bernd', 'home')
+          or is_state('person.man_yie', 'home')
+          or is_state('input_boolean.home_modes_guest_mode', 'on')
+      }}

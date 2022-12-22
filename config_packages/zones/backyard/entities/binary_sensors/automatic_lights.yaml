@@ -1,0 +1,9 @@
+---
+platform: template
+sensors:
+  backyard_automatic_lights:
+    friendly_name: "Backyard - Automatic Lights"
+    value_template:  >
+      {{-
+        states('input_boolean.backyard_lights_manual_mode')  == 'off'
+      -}}

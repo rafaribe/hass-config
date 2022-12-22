@@ -1,0 +1,121 @@
+---
+id: kitchen_lights_scene_controller
+alias: Kitchen - Lights - Scene controller
+max_exceeded: silent
+
+trigger:
+  - id: kitchen_switch_top
+    platform: device
+    domain: hue
+    device_id: e2c68b8b1646561244951cc00dc50d84
+    type: initial_press
+    subtype: 1
+    unique_id: 7a1b2a96-6cb8-48d1-8265-7897b676c176
+
+  - id: kitchen_switch_bottom
+    platform: device
+    domain: hue
+    device_id: e2c68b8b1646561244951cc00dc50d84
+    type: initial_press
+    subtype: 2
+    unique_id: 54f06d73-0bf8-4e2d-93a5-c8a65de6de48
+
+  - id: kitchen_motion_detected
+    platform: state
+    entity_id: binary_sensor.kitchen_motion
+    to: "on"
+
+  - id: automatic_lights_timer_finished
+    platform: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.kitchen_automatic_lights
+
+  - id: lights_turned_off
+    platform: state
+    entity_id: light.kitchen
+    from: 'on'
+    to: 'off'
+
+variables:
+  scene_helper: input_select.kitchen_lights_scene
+  automatic_lights_duration: "{{ (states('input_number.automatic_lights_duration_kitchen') | float(0)) * 60 }}"
+
+action:
+  - alias: "choose scene based on trigger"
+    choose:
+      # Turn on with switch
+      - conditions:
+          - condition: trigger
+            id: kitchen_switch_top
+        sequence:
+          - service: input_select.select_option
+            data:
+              entity_id: "{{ scene_helper }}"
+              option: "Full brightness"
+
+      # Turn on automatically
+      - conditions:
+          - and:
+              - condition: state
+                entity_id: binary_sensor.kitchen_automatic_lights
+                state: "on"
+              - condition: state
+                entity_id: binary_sensor.kitchen_is_dark
+                state: "on"
+              - or:
+                  - condition: trigger
+                    id: kitchen_motion_detected
+
+        sequence:
+          - choose:
+              # Only set these scenes in the evening
+              - conditions:
+                  - or:
+                      - alias: "Late evening"
+                        condition: state
+                        entity_id: sensor.system_time_of_day
+                        state: "late_evening"
+                      - alias: "night"
+                        condition: state
+                        entity_id: sensor.system_time_of_day
+                        state: "night"
+                sequence:
+                  - service: input_select.select_option
+                    data:
+                      entity_id: "{{ scene_helper }}"
+                      option: "Relaxed"
+
+            # Select "Full brightness"
+            default:
+              - service: input_select.select_option
+                data:
+                  entity_id: "{{ scene_helper }}"
+                  option: "Full brightness"
+
+          - service: timer.start
+            data:
+              entity_id: timer.kitchen_automatic_lights
+              duration: "{{ automatic_lights_duration }}"
+
+      # Select "off" scene
+      - conditions:
+          - or:
+              # Turned off manually
+              - condition: trigger
+                id: kitchen_switch_bottom
+              - condition: trigger
+                id: lights_turned_off
+              # Turn off automatically
+              - and:
+                  - condition: trigger
+                    id: automatic_lights_timer_finished
+                  - condition: state
+                    entity_id: binary_sensor.kitchen_automatic_lights
+                    state: "on"
+
+        sequence:
+          - service: input_select.select_option
+            data:
+              entity_id: "{{ scene_helper }}"
+              option: "Off"
